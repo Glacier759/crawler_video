@@ -31,20 +31,22 @@ public class SohuSpider implements PageProcessor {
         }
 
         if (page.getUrl().regex(MOVIE_HOME).match()) {
-
             String link = page.getHtml().xpath("//a[@class='btn-playFea']/@href").toString();
+            //获取电影名称加入请求中
             page.addTargetRequest(new Request(link).putExtra("videoName", page.getHtml().xpath("//span[@class='vname']/text()").toString()));
         }
 
         if (page.getUrl().regex(MOVIE_URL).match()) {
-
             if (page.getRequest().getExtra("videoName") == null) {
+                //获取电影名称加入请求中
                 page.getRequest().putExtra("videoName", page.getHtml().xpath("//meta[@name='album']/@content"));
             }
             String link = "http://hot.vrs.sohu.com/vrs_flash.action?vid=" + page.getHtml().regex("vid=\"(\\d*)").toString() + "&bw=2048";//&af=1";
+            //获取电影名称加入请求中
             page.addTargetRequest(new Request(link).putExtra("videoName", page.getRequest().getExtra("videoName")).putExtra("vid", page.getHtml().regex("vid=\"(\\d*)").toString()));
 
             String plLink = "http://pl.hd.sohu.com/videolist?playlistid=" + page.getHtml().regex("playlistId=\"(\\d*)");
+            //获取电影名称加入请求中
             page.addTargetRequest(new Request(plLink).putExtra("videoName", page.getRequest().getExtra("videoName")));
 
         }
@@ -104,6 +106,6 @@ public class SohuSpider implements PageProcessor {
 //                .addUrl("http://so.tv.sohu.com/list_p1101_p2_p3_u7f8e_u5267_p4-1_p5_p6_p73_p80_p91_p101_p11_p12_p130.html")
 //                .addPipeline(new ConsolePipeline())
 //                .addPipeline(new PutFiles("./target/videoList/"))
-                .addPipeline(new VideoPipeline("./target")).run();
+                .addPipeline(new VideoPipeline("./target",true)).run();
     }
 }

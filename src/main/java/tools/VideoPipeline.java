@@ -13,31 +13,43 @@ import java.util.Map;
  */
 public class VideoPipeline extends FilePersistentBase implements Pipeline {
     private String directory = null;
+    private boolean subsection = false;
+
     /**
      * create a PutFiles with default path"/data/webmagic/"
      */
-    public VideoPipeline() {
+    public VideoPipeline(boolean subsection) {
         setPath("/data/video/");
+        this.subsection=subsection;
     }
 
-    public VideoPipeline(String path) {
+    public VideoPipeline(String path,boolean subsection) {
         setPath(path);
+        this.subsection=subsection;
     }
 
     public void process(ResultItems resultItems, Task task) {
         directory = resultItems.getRequest().getExtra("videoName").toString();
-        Download download=null;
+        Download download = null;
         for (Map.Entry<String, Object> entry : resultItems.getAll().entrySet()) {
             if (entry.getValue() instanceof Iterable) {
                 Iterable value = (Iterable) entry.getValue();
                 for (Object o : value) {
                     try {
-                        download=  new Download((Request)o,getPath() + directory,entry.getKey());
+                        download = new Download((Request) o, getPath() + directory, entry.getKey(),subsection);
                         download.start();
                         download.join();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
+            } else {
+                try {
+                    download = new Download((Request) entry.getValue(), getPath() + directory, entry.getKey(),subsection);
+                    download.start();
+                    download.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }

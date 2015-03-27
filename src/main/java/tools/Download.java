@@ -24,13 +24,14 @@ public class Download extends Thread {
     private File filePath = null;
     private String videoName = null;
 
-    public Download(Request request, String directory, String videoName) {
+    public Download(Request request, String directory, String videoName, boolean subsection) {
         this.httpClient = HttpClients.createDefault();
         this.context = HttpClientContext.create();
         this.httpget = new HttpGet(request.getUrl().toString());
-        this.videoName = videoName + request.getExtra("subsection").toString();
+        this.videoName = videoName + getSubsection(request, subsection);
         checkSubsection(directory + "/");
         downloadPath = directory + "/" + this.videoName.replaceAll(":", "") + ".mp4";
+
     }
 
     private void loading(InputStream in, OutputStream out, double fileSize) {
@@ -51,6 +52,15 @@ public class Download extends Thread {
             e.printStackTrace();
         }
 
+    }
+
+
+    private String getSubsection(Request request, boolean subsection) {
+        String result = " ";
+        if (subsection){
+            result=  request.getExtra("subsection").toString();
+        }
+        return result ;
     }
 
     private double getFileSize(CloseableHttpResponse response) {
@@ -85,6 +95,7 @@ public class Download extends Thread {
         try {
             CloseableHttpResponse response = httpClient.execute(httpget, context);
             try {
+                System.out.println(response.getStatusLine().getStatusCode());
                 if (response.getStatusLine().getStatusCode() == 200) {
                     HttpEntity entity1 = response.getEntity();
                     if (entity1 != null) {

@@ -35,7 +35,8 @@ public class HunanSpider implements PageProcessor {
         }
         if (page.getUrl().regex(cdn).match()){
             Json json=page.getJson();
-            page.putField(page.getRequest().getExtra("videoName").toString(),new Request(json.jsonPath(".info").toString()+"?wshc_tag=1"));
+            page.putField(page.getRequest().getExtra("videoName").toString()
+                    ,new Request(json.jsonPath(".info").toString()+"?wshc_tag=1").putExtra("videoName",page.getRequest().getExtra("videoName")));
         }
     }
 
@@ -45,8 +46,9 @@ public class HunanSpider implements PageProcessor {
     }
 
     public static void main(String[] args) {
-        Spider.create(new HunanSpider()).addUrl("http://www.hunantv.com/v/1/1/f/1123276.html").addPipeline(new ConsolePipeline())
-                .addPipeline(new VideoPipeline("./target"))
+        Spider.create(new HunanSpider()).addUrl("http://www.hunantv.com/v/1/1/f/1123276.html")
+                .addPipeline(new ConsolePipeline())
+                .addPipeline(new VideoPipeline("./target",false))
                 .run();
     }
 }
