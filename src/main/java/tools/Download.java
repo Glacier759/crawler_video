@@ -23,15 +23,16 @@ public class Download extends Thread {
     private String downloadPath = null;
     private File filePath = null;
     private String videoName = null;
+    private String fileType=".";
 
-    public Download(Request request, String directory, String videoName, boolean subsection) {
+    public Download(Request request, String directory, String videoName, boolean subsection,String platform) {
         this.httpClient = HttpClients.createDefault();
         this.context = HttpClientContext.create();
         this.httpget = new HttpGet(request.getUrl().toString());
+        setHeader(request,platform);
         this.videoName = videoName + getSubsection(request, subsection);
         checkSubsection(directory + "/");
         downloadPath = directory + "/" + this.videoName.replaceAll(":", "") + ".mp4";
-
     }
 
     private void loading(InputStream in, OutputStream out, double fileSize) {
@@ -62,7 +63,10 @@ public class Download extends Thread {
         }
         return result ;
     }
-
+    private void setHeader(Request request,String paltform){
+        if(paltform.equals("hunantv")){
+        this.httpget.addHeader("Referer",request.getUrl().toString());}
+    }
     private double getFileSize(CloseableHttpResponse response) {
         double fileSize = Long.valueOf(response.getHeaders("Content-Length")[0].getValue());
         return fileSize;
@@ -95,7 +99,7 @@ public class Download extends Thread {
         try {
             CloseableHttpResponse response = httpClient.execute(httpget, context);
             try {
-                System.out.println(response.getStatusLine().getStatusCode());
+                System.out.println(response.getLastHeader("Content-Disposition"));
                 if (response.getStatusLine().getStatusCode() == 200) {
                     HttpEntity entity1 = response.getEntity();
                     if (entity1 != null) {

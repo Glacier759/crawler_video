@@ -48,7 +48,7 @@ public class HunanSpider implements PageProcessor {
     public static void main(String[] args) {
         Spider.create(new HunanSpider()).addUrl("http://www.hunantv.com/v/1/1/f/1123276.html")
                 .addPipeline(new ConsolePipeline())
-                .addPipeline(new VideoPipeline("./target",false))
+                .addPipeline(new VideoPipeline("./target",false,"hunantv"))
                 .run();
     }
 }

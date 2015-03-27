@@ -106,6 +106,6 @@ public class SohuSpider implements PageProcessor {
 //                .addUrl("http://so.tv.sohu.com/list_p1101_p2_p3_u7f8e_u5267_p4-1_p5_p6_p73_p80_p91_p101_p11_p12_p130.html")
 //                .addPipeline(new ConsolePipeline())
 //                .addPipeline(new PutFiles("./target/videoList/"))
-                .addPipeline(new VideoPipeline("./target",true)).run();
+                .addPipeline(new VideoPipeline("./target",true,"sohu")).run();
     }
 }

@@ -14,18 +14,21 @@ import java.util.Map;
 public class VideoPipeline extends FilePersistentBase implements Pipeline {
     private String directory = null;
     private boolean subsection = false;
+    private String platform;
 
     /**
      * create a PutFiles with default path"/data/webmagic/"
      */
-    public VideoPipeline(boolean subsection) {
+    public VideoPipeline(boolean subsection,String platform) {
         setPath("/data/video/");
         this.subsection=subsection;
+        this.platform=platform;
     }
 
-    public VideoPipeline(String path,boolean subsection) {
+    public VideoPipeline(String path,boolean subsection,String platform) {
         setPath(path);
         this.subsection=subsection;
+        this.platform=platform;
     }
 
     public void process(ResultItems resultItems, Task task) {
@@ -36,7 +39,7 @@ public class VideoPipeline extends FilePersistentBase implements Pipeline {
                 Iterable value = (Iterable) entry.getValue();
                 for (Object o : value) {
                     try {
-                        download = new Download((Request) o, getPath() + directory, entry.getKey(),subsection);
+                        download = new Download((Request) o, getPath() + directory, entry.getKey(),subsection,platform);
                         download.start();
                         download.join();
                     } catch (InterruptedException e) {
@@ -45,7 +48,7 @@ public class VideoPipeline extends FilePersistentBase implements Pipeline {
                 }
             } else {
                 try {
-                    download = new Download((Request) entry.getValue(), getPath() + directory, entry.getKey(),subsection);
+                    download = new Download((Request) entry.getValue(), getPath() + directory, entry.getKey(),subsection,platform);
                     download.start();
                     download.join();
                 } catch (InterruptedException e) {
